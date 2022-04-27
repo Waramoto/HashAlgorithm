@@ -1,4 +1,6 @@
 import binascii
+import numpy as np
+from PIL import Image
 
 # Реализации логических операций
 
@@ -52,14 +54,22 @@ init_v1 = init_v0.copy()
 print("Введите полный путь к файлу (вместе с названием файла):")
 filepath = input()
 
-# Открываем файл в режиме чтения
-file = open(filepath, "rb")
+# Если формат файла bmp
+if filepath[-4:] == ".bmp":
+    # Открываем изображение
+    img = Image.open(filepath)
 
-# Считываем файл в байтовом представлении
-with file: byte = file.read()
+    # Преобразовываем его в numpy array
+    file = np.array(img)
 
-# Закрываем файл
-file.close()
+    # Преобразовываем numpy array в байты
+    byte = file.tobytes()
+
+# В ином случае
+else:
+    # Открываем файл в режиме чтения и считываем его в байтовом представлении
+    with open(filepath, "rb") as file:
+        byte = file.read()
 
 # Шестнадцатеричное представление
 hexadecimal = binascii.hexlify(byte)
@@ -68,7 +78,7 @@ hexadecimal = binascii.hexlify(byte)
 decimal = int(hexadecimal, 16)
 
 # Двоичное представление
-binary = bin(decimal)[2:].zfill(8)
+binary = bin(decimal)[2:].zfill(16)
 
 # Пока длина строки не кратна 16, добавляем в конец строки нули
 while len(binary) % 16 != 0:
